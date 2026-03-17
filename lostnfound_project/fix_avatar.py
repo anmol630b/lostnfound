@@ -1,0 +1,6 @@
+content = open('templates/accounts/profile.html').read()
+content = content.replace('margin-top:-40px;margin-bottom:24px;flex-wrap:wrap;overflow:visible;">', 'margin-top:-20px;margin-bottom:24px;flex-wrap:wrap;overflow:visible;">')
+content = content.replace('margin-top:-45px;padding-top:0;margin-bottom:24px;flex-wrap:wrap;overflow:visible;">', 'margin-top:-20px;margin-bottom:24px;flex-wrap:wrap;overflow:visible;">')
+content = content.replace('margin-top:-50px;margin-bottom:24px;flex-wrap:wrap;">', 'margin-top:-20px;margin-bottom:24px;flex-wrap:wrap;overflow:visible;">')
+open('templates/accounts/profile.html', 'w').write(content)
+print('Done!')

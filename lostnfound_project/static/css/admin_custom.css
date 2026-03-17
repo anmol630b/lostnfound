@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+* { font-family: 'DM Sans', sans-serif !important; }
+h1,h2,h3,h4 { font-family: 'Sora', sans-serif !important; }
+
+/* ── Header ── */
+#header {
+  background: linear-gradient(135deg, #0f1628 0%, #1a3a6e 100%) !important;
+  padding: 10px 20px !important;
+}
+#branding h1 a, #branding h1 { color: white !important; font-size: 1.1rem !important; font-weight: 800 !important; }
+#user-tools a { color: rgba(255,255,255,0.7) !important; }
+#user-tools a:hover { color: white !important; }
+
+/* ── Body & Content ── */
+html, body { background: #f1f5fb !important; }
+#content { background: #f1f5fb !important; padding: 20px !important; }
+#content h1 { color: #0f1628 !important; font-size: 1.3rem !important; padding-bottom: 10px !important; }
+
+/* ── Breadcrumbs ── */
+div.breadcrumbs {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 10px 20px !important;
+  font-size: 0.82rem !important;
+  color: #475569 !important;
+}
+div.breadcrumbs a { color: #2563eb !important; }
+
+/* ── MODULE / APP SECTION ── */
+.module {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Fix white boxes in app headers */
+.module > h2,
+.module > table > caption,
+.module caption,
+.app-accounts > .section > table > caption,
+.app-items > .section > table > caption {
+  background: linear-gradient(135deg, #1e3a6e, #2563eb) !important;
+  color: white !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+/* Dashboard app boxes specifically */
+#content-main .module h2,
+#content-main .module caption {
+  background: linear-gradient(135deg, #1e3a6e, #2563eb) !important;
+  color: white !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+}
+
+/* Recent Actions */
+#content-main .module:last-child h2 {
+  background: linear-gradient(135deg, #374151, #4b5563) !important;
+}
+
+/* ── TABLE ── */
+#result_list {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: white !important;
+}
+
+/* Fix overflow */
+.results { overflow-x: auto !important; }
+#changelist-form .results { overflow-x: auto !important; }
+
+#result_list thead th {
+  background: #1e3a6e !important;
+  color: white !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  padding: 10px 12px !important;
+  white-space: nowrap !important;
+  border: none !important;
+}
+#result_list thead th a { color: white !important; }
+#result_list thead th.sorted { background: #2563eb !important; }
+
+#result_list td {
+  padding: 10px 12px !important;
+  font-size: 0.85rem !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background: white !important;
+  max-width: 180px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+#result_list tr:hover td { background: #f0f4ff !important; }
+#result_list tr:nth-child(even) td { background: #fafbff !important; }
+
+/* ── Sidebar ── */
+#nav-sidebar { background: #f8faff !important; border-right: 1px solid #e2e8f0 !important; }
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited { color: #2563eb !important; font-weight: 700 !important; }
+
+/* ── Buttons ── */
+.button, input[type=submit], input[type=button],
+.submit-row input, a.button, .addlink {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 7px 16px !important;
+  color: white !important;
+  cursor: pointer !important;
+}
+.button:hover { opacity: 0.9 !important; }
+.deletelink, .deletelink-box a {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  border-radius: 8px !important;
+  padding: 7px 16px !important;
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+}
+.changelink, .changelink:visited { color: #2563eb !important; font-weight: 600 !important; }
+.addlink, .addlink:visited { color: white !important; }
+
+/* ── Filter ── */
+#changelist-filter {
+  background: white !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  overflow: hidden !important;
+  min-width: 180px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+#changelist-filter h2 {
+  background: #1e3a6e !important;
+  color: white !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 10px 14px !important;
+  margin: 0 !important;
+}
+#changelist-filter h3 {
+  font-size: 0.7rem !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 10px 14px 4px !important;
+  margin: 0 !important;
+}
+#changelist-filter li a { padding: 5px 14px !important; font-size: 0.82rem !important; display: block !important; color: #374151 !important; }
+#changelist-filter li a:hover { background: #f0f4ff !important; color: #2563eb !important; }
+#changelist-filter li.selected a { color: #2563eb !important; font-weight: 700 !important; }
+
+/* ── Search ── */
+#toolbar { background: white !important; border-bottom: 1px solid #e2e8f0 !important; padding: 10px 16px !important; border-radius: 12px 12px 0 0 !important; }
+#searchbar {
+  border-radius: 8px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  padding: 7px 14px !important;
+  font-size: 0.88rem !important;
+  min-width: 220px !important;
+  background: #f8faff !important;
+}
+#searchbar:focus { border-color: #2563eb !important; outline: none !important; box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important; }
+
+/* ── Actions ── */
+.actions {
+  background: white !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  padding: 8px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.actions select {
+  border-radius: 8px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  padding: 5px 10px !important;
+  font-size: 0.82rem !important;
+  background: #f8faff !important;
+}
+.action-counter { color: #2563eb !important; font-weight: 600 !important; font-size: 0.8rem !important; }
+
+/* ── Forms ── */
+.form-row { padding: 10px 14px !important; border-bottom: 1px solid #f1f5f9 !important; }
+input[type=text], input[type=email], input[type=password],
+input[type=url], input[type=number], textarea, select {
+  border-radius: 8px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  padding: 7px 12px !important;
+  font-size: 0.88rem !important;
+  background: #f8faff !important;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+  outline: none !important;
+  background: white !important;
+}
+
+/* ── Submit row ── */
+.submit-row {
+  background: #f8faff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0 0 12px 12px !important;
+  padding: 12px 18px !important;
+}
+
+/* ── Inline ── */
+.inline-group {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid #e2e8f0 !important;
+  margin-top: 16px !important;
+  background: white !important;
+}
+.inline-group h2 {
+  background: linear-gradient(135deg, #374151, #4b5563) !important;
+  color: white !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  padding: 10px 14px !important;
+  margin: 0 !important;
+}
+.tabular td, .tabular th { background: white !important; border-bottom: 1px solid #f1f5f9 !important; }
+
+/* ── Pagination ── */
+.paginator {
+  background: white !important;
+  padding: 10px 16px !important;
+  border-top: 1px solid #e2e8f0 !important;
+  font-size: 0.82rem !important;
+  border-radius: 0 0 12px 12px !important;
+}
+.paginator a { color: #2563eb !important; font-weight: 600 !important; }
+.paginator .this-page { background: #2563eb !important; color: white !important; padding: 2px 8px !important; border-radius: 6px !important; }
+
+/* ── Object tools ── */
+ul.object-tools { margin-bottom: 12px !important; }
+ul.object-tools li a {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  border-radius: 8px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  padding: 6px 14px !important;
+  color: white !important;
+}
+
+/* ── Messages ── */
+ul.messagelist li {
+  border-radius: 10px !important;
+  margin-bottom: 8px !important;
+  padding: 10px 16px !important;
+  font-size: 0.875rem !important;
+  border: none !important;
+}
+ul.messagelist .success { background: #dcfce7 !important; color: #166534 !important; border-left: 3px solid #16a34a !important; }
+ul.messagelist .error { background: #fee2e2 !important; color: #991b1b !important; border-left: 3px solid #dc2626 !important; }
+ul.messagelist .warning { background: #fef9c3 !important; color: #854d0e !important; border-left: 3px solid #ca8a04 !important; }
+
+/* ── Login Page ── */
+body.login { background: linear-gradient(135deg, #0f1628, #1e3a6e) !important; }
+body.login #content-main {
+  background: white !important;
+  border-radius: 16px !important;
+  padding: 36px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+}
+body.login .submit-row input { width: 100% !important; padding: 10px !important; font-size: 1rem !important; border-radius: 10px !important; }
+
+/* ── Dashboard model links ── */
+.module table { width: 100% !important; }
+.module table th { background: transparent !important; padding: 0 !important; }
+.module table td { padding: 8px 16px !important; border-bottom: 1px solid #f1f5f9 !important; }
+.module table tr:last-child td { border-bottom: none !important; }
+.module table .addlink { background: transparent !important; color: #2563eb !important; font-weight: 600 !important; padding: 0 !important; }
+.module table .changelink { color: #2563eb !important; font-weight: 600 !important; }
+.section a { color: #1e40af !important; font-weight: 600 !important; font-size: 0.95rem !important; }
+
+/* ── Date hierarchy ── */
+#changelist .xfull { overflow-x: auto !important; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  #result_list td { max-width: 120px !important; }
+  #nav-sidebar { display: none !important; }
+}

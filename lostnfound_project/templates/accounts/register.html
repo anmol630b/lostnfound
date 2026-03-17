@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Register Free — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div style="min-height:100vh;display:flex;align-items:stretch;">
+
+  <!-- Left Panel -->
+  <div style="flex:1;background:linear-gradient(135deg,#0f1628,#1e3a6e);display:flex;flex-direction:column;justify-content:center;padding:60px;position:relative;overflow:hidden;" class="d-none d-lg-flex">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;"></div>
+    <div style="position:absolute;bottom:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(16,185,129,0.15),transparent 70%);"></div>
+    <div class="position-relative">
+      <a href="{% url 'home' %}" style="display:flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:56px;">
+        <div style="width:38px;height:38px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-search-location" style="color:white;font-size:0.9rem;"></i>
+        </div>
+        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:white;">{{ SITE_NAME }}</span>
+      </a>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;color:white;line-height:1.2;margin-bottom:14px;letter-spacing:-0.5px;">
+        Join thousands<br>helping each other<br><span style="color:#34d399;">every day</span>
+      </h2>
+      <p style="color:rgba(255,255,255,0.5);line-height:1.8;margin-bottom:36px;max-width:340px;">
+        Anyone can use {{ SITE_NAME }} — students, professionals, families. Register in 2 minutes.
+      </p>
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:14px;">What you get for free</div>
+        {% for text in benefits %}
+        <div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.75);font-size:0.875rem;margin-bottom:11px;">
+          <i class="fas fa-check-circle" style="color:#34d399;flex-shrink:0;"></i>{{ text }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div style="width:500px;flex-shrink:0;background:var(--surface);display:flex;flex-direction:column;justify-content:center;padding:48px 44px;overflow-y:auto;" class="w-100">
+    <a href="{% url 'home' %}" style="display:flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:32px;" class="d-lg-none">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-search-location" style="color:white;font-size:0.8rem;"></i>
+      </div>
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);">{{ SITE_NAME }}</span>
+    </a>
+
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--found);margin-bottom:8px;">100% Free</div>
+    <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.75rem;color:var(--text);margin-bottom:8px;letter-spacing:-0.5px;">Create your account</h1>
+    <p style="color:var(--text3);font-size:0.9rem;margin-bottom:28px;">
+      Already have one? <a href="{% url 'login' %}" style="color:var(--blue);font-weight:700;">Sign in →</a>
+    </p>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-control" placeholder="Rahul" value="{{ form.first_name.value|default:'' }}">
+          {% for e in form.first_name.errors %}<div style="font-size:0.75rem;color:var(--lost);margin-top:3px;">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-6">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-control" placeholder="Sharma" value="{{ form.last_name.value|default:'' }}">
+          {% for e in form.last_name.errors %}<div style="font-size:0.75rem;color:var(--lost);margin-top:3px;">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label class="form-label">Username</label>
+        <div style="position:relative;">
+          <i class="fas fa-at" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.85rem;pointer-events:none;"></i>
+          <input type="text" name="username" class="form-control" placeholder="rahul_sharma" value="{{ form.username.value|default:'' }}" style="padding-left:40px;" autocomplete="username">
+        </div>
+        {% for e in form.username.errors %}<div style="font-size:0.75rem;color:var(--lost);margin-top:3px;">{{ e }}</div>{% endfor %}
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label class="form-label">Email Address</label>
+        <div style="position:relative;">
+          <i class="fas fa-envelope" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.85rem;pointer-events:none;"></i>
+          <input type="email" name="email" class="form-control" placeholder="your@email.com" value="{{ form.email.value|default:'' }}" style="padding-left:40px;" autocomplete="email">
+        </div>
+        {% for e in form.email.errors %}<div style="font-size:0.75rem;color:var(--lost);margin-top:3px;">{{ e }}</div>{% endfor %}
+      </div>
+
+      <div class="row g-3 mb-2">
+        <div class="col-6">
+          <label class="form-label">Password</label>
+          <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Create password" autocomplete="new-password">
+          {% for e in form.password1.errors %}<div style="font-size:0.75rem;color:var(--lost);margin-top:3px;">{{ e }}</div>{% endfor %}
+        </div>
+        <div class="col-6">
+          <label class="form-label">Confirm</label>
+          <input type="password" name="password2" class="form-control" placeholder="Repeat it" autocomplete="new-password">
+          {% for e in form.password2.errors %}<div style="font-size:0.75rem;color:var(--lost);margin-top:3px;">{{ e }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <!-- Password strength -->
+      <div style="height:4px;background:var(--border);border-radius:2px;margin-bottom:4px;overflow:hidden;">
+        <div class="pwd-strength-bar" style="height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;width:0%;"></div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--text3);margin-bottom:16px;">Strength: <span class="pwd-strength-text">—</span></div>
+
+      {% if form.non_field_errors %}
+      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;font-size:0.85rem;color:var(--lost);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-exclamation-triangle"></i> {{ form.non_field_errors.0 }}
+      </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary w-100 btn-lg mb-3" style="font-size:0.95rem;font-weight:700;height:50px;">
+        <i class="fas fa-user-plus me-2"></i>Create Free Account
+      </button>
+      <p style="font-size:0.72rem;color:var(--text3);text-align:center;">
+        By registering you agree to use this platform responsibly.
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}

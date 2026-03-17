@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Claim Item — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+
+<div class="container py-4" style="max-width:580px;">
+  <div class="form-card">
+
+    <div class="d-flex align-items-center gap-3 mb-4 pb-4" style="border-bottom:1px solid var(--border);">
+      <div style="width:48px;height:48px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,0.1);">
+        <i class="fas fa-hand-point-up" style="color:var(--gold);font-size:1.2rem;"></i>
+      </div>
+      <div>
+        <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.3rem;margin:0;">Submit a Claim</h2>
+        <p style="color:var(--text2);font-size:0.82rem;margin:0;">For: <strong>{{ item.title }}</strong></p>
+      </div>
+    </div>
+
+    <div class="alert alert-info mb-4" style="font-size:0.85rem;">
+      <i class="fas fa-info-circle me-2"></i>
+      Describe how you can prove this item belongs to you. The owner will review your claim and contact you.
+    </div>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+        <div style="font-size:0.78rem;color:var(--lost);margin-top:4px;">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div class="d-flex gap-3 flex-wrap mt-4">
+        <button type="submit" class="btn btn-primary flex-grow-1" style="min-height:48px;">
+          <i class="fas fa-paper-plane me-2"></i>Submit Claim
+        </button>
+        <a href="{% url 'item_detail' item.pk %}" class="btn btn-ghost" style="min-height:48px;padding:0 20px;">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

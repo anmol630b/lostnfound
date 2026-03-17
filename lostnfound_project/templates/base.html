@@ -1,0 +1,348 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+  <meta name="description" content="{{ SITE_DESCRIPTION }}">
+  <meta name="keywords" content="lost and found, lost items, found items, help, community">
+  <meta name="author" content="{{ SITE_NAME }}">
+  <meta property="og:title" content="{% block og_title %}{{ SITE_NAME }} — {{ SITE_TAGLINE }}{% endblock %}">
+  <meta property="og:description" content="{% block og_desc %}{{ SITE_DESCRIPTION }}{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ SITE_NAME }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ SITE_NAME }}">
+  <meta name="twitter:description" content="{{ SITE_DESCRIPTION }}">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<!-- ══ NAVBAR ══════════════════════════════════════ -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNavbar">
+  <div class="container">
+
+    <!-- Brand -->
+    <a class="navbar-brand" href="/">
+      <span class="brand-icon"><i class="fas fa-search-location"></i></span>
+      {{ SITE_NAME }}
+    </a>
+
+    <!-- Mobile toggle -->
+    <div class="d-flex align-items-center gap-2 d-lg-none">
+      <button id="darkToggle" title="Toggle dark mode"></button>
+      <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <i class="fas fa-bars" style="color:var(--text2);font-size:1.1rem;"></i>
+      </button>
+    </div>
+
+    <div class="collapse navbar-collapse" id="nav">
+      <!-- Left links -->
+      <ul class="navbar-nav me-auto ms-2 gap-1">
+        <li class="nav-item">
+          <a class="nav-link" href="/">
+            <i class="fas fa-home me-1"></i>Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'item_list' %}">
+            <i class="fas fa-th-large me-1"></i>Browse
+          </a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            <i class="fas fa-plus me-1"></i>Post Item
+          </a>
+          <ul class="dropdown-menu shadow border-0 rounded-3 p-2" style="background:var(--surface);border:1px solid var(--border) !important;min-width:210px;">
+            <li>
+              <a class="dropdown-item rounded-2 py-2" href="{% url 'post_lost' %}">
+                <span style="width:28px;height:28px;background:rgba(239,68,68,0.1);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;">
+                  <i class="fas fa-exclamation-triangle" style="color:var(--lost);font-size:0.75rem;"></i>
+                </span>
+                <span style="font-weight:600;color:var(--lost);">I Lost Something</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item rounded-2 py-2" href="{% url 'post_found' %}">
+                <span style="width:28px;height:28px;background:rgba(16,185,129,0.1);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;">
+                  <i class="fas fa-hand-holding" style="color:var(--found);font-size:0.75rem;"></i>
+                </span>
+                <span style="font-weight:600;color:var(--found);">I Found Something</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+
+      <!-- Right side -->
+      <div class="d-flex align-items-center gap-3">
+        <!-- Desktop Search -->
+        <div class="search-wrap d-none d-lg-flex align-items-center">
+          <span class="search-icon"><i class="fas fa-search"></i></span>
+          <input type="text" id="navSearch" placeholder="Search items..." autocomplete="off">
+          <div id="searchDrop" class="search-dropdown"></div>
+        </div>
+        <!-- Dark toggle (desktop) -->
+        <button id="darkToggle" class="d-none d-lg-block" title="Toggle dark mode"></button>
+
+        {% if user.is_authenticated %}
+        <!-- User dropdown -->
+        <div class="dropdown">
+          <button class="btn d-flex align-items-center gap-2 py-1 px-2 rounded-3 dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-weight:600;font-size:0.875rem;">
+            {% if user.profile.profile_picture %}
+              <img src="{{ user.profile.profile_picture.url }}" class="avatar-sm" alt="">
+            {% else %}
+              <span class="avatar-initials" data-name="{{ user.first_name|default:user.username }}">
+                {{ user.first_name|first|upper|default:user.username|first|upper }}
+              </span>
+            {% endif %}
+            <span class="d-none d-md-inline">{{ user.first_name|default:user.username }}</span>
+            <i class="fas fa-chevron-down" style="font-size:0.65rem;color:var(--text3);"></i>
+          </button>
+
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 p-2"
+              style="background:var(--surface);border:1px solid var(--border) !important;min-width:230px;margin-top:8px;">
+
+            <!-- User info header -->
+            <li class="px-3 py-2 mb-1">
+              <div class="d-flex align-items-center gap-3">
+                {% if user.profile.profile_picture %}
+                  <img src="{{ user.profile.profile_picture.url }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" alt="">
+                {% else %}
+                  <span class="avatar-initials" data-name="{{ user.first_name|default:user.username }}" style="width:40px;height:40px;font-size:0.9rem;">
+                    {{ user.first_name|first|upper|default:user.username|first|upper }}
+                  </span>
+                {% endif %}
+                <div>
+                  <div style="font-weight:700;font-size:0.875rem;color:var(--text);">{{ user.get_full_name|default:user.username }}</div>
+                  <div style="font-size:0.72rem;color:var(--text3);">{{ user.email|truncatechars:24 }}</div>
+                </div>
+              </div>
+            </li>
+
+            <li><hr style="border-color:var(--border);margin:4px 0;"></li>
+
+            <li>
+              <a class="dropdown-item rounded-2 py-2" href="{% url 'my_items' %}" style="color:var(--text);font-size:0.875rem;">
+                <span style="width:24px;height:24px;background:rgba(37,99,235,0.1);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;">
+                  <i class="fas fa-box" style="color:var(--blue);font-size:0.7rem;"></i>
+                </span>My Items
+                <span class="float-end" style="background:var(--surface2);color:var(--text3);padding:1px 7px;border-radius:20px;font-size:0.7rem;">{{ user.items.count }}</span>
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item rounded-2 py-2" href="{% url 'profile' %}" style="color:var(--text);font-size:0.875rem;">
+                <span style="width:24px;height:24px;background:rgba(107,114,128,0.1);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;">
+                  <i class="fas fa-user-cog" style="color:var(--text2);font-size:0.7rem;"></i>
+                </span>Profile & Settings
+              </a>
+            </li>
+
+            <li><hr style="border-color:var(--border);margin:4px 0;"></li>
+            <li>
+              <a class="dropdown-item rounded-2 py-2" href="{% url 'logout' %}" style="color:var(--lost);font-size:0.875rem;font-weight:600;">
+                <span style="width:24px;height:24px;background:rgba(239,68,68,0.08);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;">
+                  <i class="fas fa-sign-out-alt" style="color:var(--lost);font-size:0.7rem;"></i>
+                </span>Sign Out
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-ghost btn-sm d-none d-md-inline-flex">
+          <i class="fas fa-sign-in-alt me-1"></i>Login
+        </a>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-sm">
+          <i class="fas fa-user-plus me-1"></i>Get Started
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ ALERTS ══════════════════════════════════════ -->
+{% if messages %}
+<div style="position:fixed;top:80px;right:20px;z-index:9999;width:340px;max-width:calc(100vw - 40px);">
+  {% for m in messages %}
+  <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags }}{% endif %} alert-dismissible fade show shadow"
+       style="border-radius:12px;font-size:0.875rem;">
+    <i class="fas fa-{% if m.tags == 'success' %}check-circle{% elif m.tags == 'error' or m.tags == 'danger' %}times-circle{% elif m.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+    {{ m }}
+    <button type="button" class="btn-close btn-close-sm ms-auto" data-bs-dismiss="alert" style="font-size:0.7rem;"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ══ MAIN CONTENT ════════════════════════════════ -->
+<main>{% block content %}{% endblock %}</main>
+
+<!-- ══ FOOTER ══════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="row gy-4 mb-4">
+      <div class="col-lg-4">
+        <div class="footer-brand">
+          <span class="brand-icon"><i class="fas fa-search-location"></i></span>
+          {{ SITE_NAME }}
+        </div>
+        <p style="font-size:0.875rem;line-height:1.8;max-width:280px;color:rgba(255,255,255,0.5);">
+          {{ SITE_DESCRIPTION }}
+        </p>
+      </div>
+      <div class="col-lg-2 col-6">
+        <div class="footer-heading">Explore</div>
+        <a href="/" class="footer-link">Home</a>
+        <a href="{% url 'item_list' %}" class="footer-link">Browse Items</a>
+        <a href="{% url 'item_list' %}?item_type=lost" class="footer-link">Lost Items</a>
+        <a href="{% url 'item_list' %}?item_type=found" class="footer-link">Found Items</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <div class="footer-heading">Account</div>
+        {% if user.is_authenticated %}
+        <a href="{% url 'post_lost' %}" class="footer-link">Post Lost Item</a>
+        <a href="{% url 'post_found' %}" class="footer-link">Post Found Item</a>
+        <a href="{% url 'my_items' %}" class="footer-link">My Items</a>
+        <a href="{% url 'profile' %}" class="footer-link">Profile</a>
+        {% else %}
+        <a href="{% url 'register' %}" class="footer-link">Register Free</a>
+        <a href="{% url 'login' %}" class="footer-link">Login</a>
+        <a href="{% url 'password_reset' %}" class="footer-link">Forgot Password</a>
+        {% endif %}
+      </div>
+      <div class="col-lg-4">
+        <div class="footer-heading">Why {{ SITE_NAME }}?</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.55);font-size:0.85rem;"><i class="fas fa-check-circle" style="color:var(--found);flex-shrink:0;"></i>100% Free — No charges ever</div>
+          <div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.55);font-size:0.85rem;"><i class="fas fa-check-circle" style="color:var(--found);flex-shrink:0;"></i>WhatsApp & Email contact</div>
+          <div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.55);font-size:0.85rem;"><i class="fas fa-check-circle" style="color:var(--found);flex-shrink:0;"></i>Open to everyone</div>
+          <div style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.55);font-size:0.85rem;"><i class="fas fa-check-circle" style="color:var(--found);flex-shrink:0;"></i>Photo upload support</div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:24px;text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.22);">
+      &copy; 2024 {{ SITE_NAME }} &nbsp;·&nbsp; {{ SITE_TAGLINE }} &nbsp;·&nbsp; Made with <i class="fas fa-heart" style="color:#ef4444;"></i> for everyone
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+
+<!-- Avatar color initialization -->
+<script>
+document.querySelectorAll('.avatar-initials').forEach(el => {
+  const colors = [
+    ['#2563eb','#1d4ed8'],['#7c3aed','#6d28d9'],['#db2777','#be185d'],
+    ['#dc2626','#b91c1c'],['#059669','#047857'],['#d97706','#b45309'],
+    ['#0891b2','#0e7490'],['#65a30d','#4d7c0f']
+  ];
+  const name  = el.dataset.name || 'U';
+  const idx   = name.charCodeAt(0) % colors.length;
+  el.style.background = `linear-gradient(135deg, ${colors[idx][0]}, ${colors[idx][1]})`;
+});
+</script>
+  <!-- FOOTER -->
+  <footer style="background:#0a0f1e;color:rgba(255,255,255,0.5);margin-top:auto;">
+
+    <!-- Main footer -->
+    <div class="container" style="padding:48px 0 32px;">
+      <div class="row g-4">
+
+        <!-- Brand -->
+        <div class="col-12 col-md-4">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-search-location" style="color:white;font-size:0.85rem;"></i>
+            </div>
+            <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:white;">{{ SITE_NAME }}</span>
+          </div>
+          <p style="font-size:0.85rem;line-height:1.8;color:rgba(255,255,255,0.4);max-width:260px;margin-bottom:20px;">
+            {{ SITE_TAGLINE }}
+          </p>
+          <div style="display:flex;gap:10px;">
+            <div style="width:34px;height:34px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(37,99,235,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+              <i class="fab fa-github" style="color:rgba(255,255,255,0.6);font-size:0.85rem;"></i>
+            </div>
+            <div style="width:34px;height:34px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(37,99,235,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+              <i class="fab fa-twitter" style="color:rgba(255,255,255,0.6);font-size:0.85rem;"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-6 col-md-2">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px;">Navigate</div>
+          {% for label, url in footer_links %}
+          <a href="{{ url }}" style="display:block;font-size:0.85rem;color:rgba(255,255,255,0.45);text-decoration:none;margin-bottom:10px;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">
+            {{ label }}
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Features -->
+        <div class="col-6 col-md-3">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px;">Features</div>
+          {% for feat in footer_features %}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <i class="fas fa-check-circle" style="color:#34d399;font-size:0.7rem;flex-shrink:0;"></i>
+            <span style="font-size:0.85rem;color:rgba(255,255,255,0.45);">{{ feat }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Stats -->
+        <div class="col-12 col-md-3">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:16px;">Live Stats</div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.07);">
+              <div style="text-align:center;">
+                <div style="font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;color:white;">{{ footer_stats.lost }}</div>
+                <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Lost</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;color:white;">{{ footer_stats.found }}</div>
+                <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Found</div>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Sora',sans-serif;font-size:1.4rem;font-weight:800;color:#34d399;">{{ footer_stats.resolved }}</div>
+                <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;">Reunited</div>
+              </div>
+            </div>
+            <div style="font-size:0.75rem;color:rgba(255,255,255,0.3);text-align:center;">
+              <i class="fas fa-circle" style="color:#34d399;font-size:0.5rem;margin-right:5px;animation:pulse 2s infinite;"></i>
+              Updated in real-time
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div style="border-top:1px solid rgba(255,255,255,0.06);">
+      <div class="container" style="padding:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.25);">
+          © 2025 {{ SITE_NAME }}. Built with <i class="fas fa-heart" style="color:#ef4444;font-size:0.7rem;"></i> using Django & Bootstrap 5.
+        </div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.2);">
+          Free for everyone · No ads · Open community
+        </div>
+      </div>
+    </div>
+
+  </footer>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}403 — Access Denied{% endblock %}
+{% block content %}
+<div style="min-height:70vh;display:flex;align-items:center;justify-content:center;">
+  <div style="text-align:center;padding:40px 20px;max-width:500px;">
+    <div style="font-family:'Sora',sans-serif;font-size:7rem;font-weight:800;line-height:1;
+      background:linear-gradient(135deg,var(--gold),#ef4444);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+      403
+    </div>
+    <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.6rem;margin:16px 0 10px;color:var(--text);">
+      Access Denied
+    </h2>
+    <p style="color:var(--text2);line-height:1.7;margin-bottom:32px;">
+      You don't have permission to access this page. Please login or contact admin.
+    </p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/" class="btn btn-primary btn-lg"><i class="fas fa-home me-2"></i>Go Home</a>
+      <a href="/accounts/login/" class="btn btn-ghost btn-lg"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

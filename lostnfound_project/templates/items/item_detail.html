@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.title }} — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+
+<div class="container py-4" style="max-width:1000px;">
+
+  <!-- Breadcrumb -->
+  <nav style="font-size:0.78rem;margin-bottom:20px;">
+    <a href="{% url 'home' %}" style="color:var(--text3);text-decoration:none;">Home</a>
+    <span style="color:var(--text3);margin:0 8px;">/</span>
+    <a href="{% url 'item_list' %}" style="color:var(--text3);text-decoration:none;">Browse</a>
+    <span style="color:var(--text3);margin:0 8px;">/</span>
+    <span style="color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;display:inline-block;vertical-align:middle;">{{ item.title }}</span>
+  </nav>
+
+  <div class="row g-4">
+
+    <!-- LEFT: Image + Share -->
+    <div class="col-12 col-md-5">
+
+      <!-- Image -->
+      <div style="border-radius:18px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.12);margin-bottom:16px;position:relative;">
+        {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.title }}"
+             style="width:100%;max-height:380px;object-fit:cover;display:block;">
+        {% else %}
+        <div style="height:280px;
+          background:{% if item.item_type == 'lost' %}linear-gradient(135deg,#fee2e2,#fecaca){% else %}linear-gradient(135deg,#d1fae5,#a7f3d0){% endif %};
+          display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+          <i class="fas {{ item.get_category_icon }}"
+             style="font-size:3.5rem;color:{% if item.item_type == 'lost' %}var(--lost){% else %}var(--found){% endif %};opacity:0.6;"></i>
+          <span style="font-size:0.8rem;color:{% if item.item_type == 'lost' %}var(--lost){% else %}var(--found){% endif %};font-weight:600;opacity:0.7;">No photo uploaded</span>
+        </div>
+        {% endif %}
+
+        <!-- Type overlay -->
+        <div style="position:absolute;top:14px;left:14px;
+          background:{% if item.item_type == 'lost' %}rgba(239,68,68,0.92){% else %}rgba(16,185,129,0.92){% endif %};
+          color:white;padding:5px 14px;border-radius:20px;font-size:0.72rem;font-weight:700;
+          letter-spacing:1px;backdrop-filter:blur(8px);">
+          {{ item.item_type|upper }}
+        </div>
+      </div>
+
+      <!-- Share Box -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px;">
+          <i class="fas fa-share-alt me-2"></i>Share this item
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <a href="{{ whatsapp_share }}" target="_blank" rel="noopener"
+             style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;background:#25d366;color:white;font-weight:600;font-size:0.82rem;text-decoration:none;transition:all 0.2s;">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+          </a>
+          <button onclick="copyLink()" id="copyBtn"
+             style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;background:var(--surface2);color:var(--text2);font-weight:600;font-size:0.82rem;border:1px solid var(--border);cursor:pointer;transition:all 0.2s;">
+            <i class="fas fa-link"></i> Copy Link
+          </button>
+          <a href="{{ twitter_share }}" target="_blank" rel="noopener"
+             style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;background:#1da1f2;color:white;font-weight:600;font-size:0.82rem;text-decoration:none;transition:all 0.2s;">
+            <i class="fab fa-twitter"></i> Twitter
+          </a>
+          <a href="{{ facebook_share }}" target="_blank" rel="noopener"
+             style="display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;background:#1877f2;color:white;font-weight:600;font-size:0.82rem;text-decoration:none;transition:all 0.2s;">
+            <i class="fab fa-facebook"></i> Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Details -->
+    <div class="col-12 col-md-7">
+
+      <!-- Status badges -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <span style="background:{% if item.item_type == 'lost' %}rgba(239,68,68,0.1);color:var(--lost);border:1px solid rgba(239,68,68,0.2){% else %}rgba(16,185,129,0.1);color:var(--found);border:1px solid rgba(16,185,129,0.2){% endif %};padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:700;">
+          {{ item.item_type|upper }}
+        </span>
+        {% if item.status == 'resolved' %}
+        <span style="background:rgba(37,99,235,0.1);color:var(--blue);border:1px solid rgba(37,99,235,0.2);padding:5px 14px;border-radius:20px;font-size:0.75rem;font-weight:700;">
+          <i class="fas fa-check me-1"></i>RESOLVED
+        </span>
+        {% endif %}
+        <span style="background:var(--surface2);color:var(--text3);border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">
+          <i class="fas fa-eye me-1"></i>{{ item.views_count }} views
+        </span>
+        {% if claims_count > 0 %}
+        <span style="background:rgba(245,158,11,0.1);color:var(--gold);border:1px solid rgba(245,158,11,0.2);padding:5px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">
+          <i class="fas fa-hand-paper me-1"></i>{{ claims_count }} claim{{ claims_count|pluralize }}
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Title -->
+      <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.3rem,3vw,1.75rem);color:var(--text);margin-bottom:12px;line-height:1.2;">
+        {{ item.title }}
+      </h1>
+
+      <!-- Description -->
+      <p style="color:var(--text2);line-height:1.8;font-size:0.95rem;margin-bottom:20px;">
+        {{ item.description }}
+      </p>
+
+      <!-- Meta Info Grid -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:4px 0;margin-bottom:20px;">
+        {% for icon, label, value, color in meta_info %}
+        <div style="display:flex;align-items:center;gap:14px;padding:12px 16px;{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
+          <div style="width:32px;height:32px;background:{{ color }}15;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas {{ icon }}" style="color:{{ color }};font-size:0.78rem;"></i>
+          </div>
+          <div>
+            <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);">{{ label }}</div>
+            <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-top:1px;">{{ value }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Contact Buttons -->
+      {% if item.contact_phone or item.contact_email %}
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px;">
+          Contact Options
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          {% if item.contact_phone %}
+          <a href="tel:{{ item.contact_phone }}" class="btn btn-ghost btn-sm">
+            <i class="fas fa-phone me-2"></i>{{ item.contact_phone }}
+          </a>
+          {% if whatsapp_link %}
+          <a href="{{ whatsapp_link }}" target="_blank" class="btn btn-whatsapp btn-sm">
+            <i class="fab fa-whatsapp me-2"></i>WhatsApp
+          </a>
+          {% endif %}
+          {% endif %}
+          {% if item.contact_email %}
+          <a href="mailto:{{ item.contact_email }}" class="btn btn-ghost btn-sm">
+            <i class="fas fa-envelope me-2"></i>Email
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Action Buttons -->
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        {% if user.is_authenticated %}
+          {% if item.posted_by == user %}
+            {% if item.status == 'active' %}
+            <form method="POST" action="{% url 'mark_resolved' item.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success-custom">
+                <i class="fas fa-check-circle me-2"></i>Mark as Resolved
+              </button>
+            </form>
+            {% endif %}
+            <a href="{% url 'edit_item' item.pk %}" class="btn btn-ghost">
+              <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a href="{% url 'delete_item' item.pk %}" class="btn btn-ghost" style="color:var(--lost);">
+              <i class="fas fa-trash me-2"></i>Delete
+            </a>
+          {% else %}
+            {% if item.status == 'active' %}
+              {% if user_has_claimed %}
+              <button class="btn btn-ghost" disabled style="opacity:0.6;">
+                <i class="fas fa-check me-2"></i>Claim Submitted
+              </button>
+              {% else %}
+              <a href="{% url 'claim_item' item.pk %}" class="btn btn-primary">
+                <i class="fas fa-hand-point-up me-2"></i>This is Mine / I Know the Owner
+              </a>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        {% else %}
+        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+          <i class="fas fa-sign-in-alt me-2"></i>Login to Claim
+        </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Similar Items -->
+  {% if similar %}
+  <div style="margin-top:48px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:{% if item.item_type == 'lost' %}var(--lost){% else %}var(--found){% endif %};margin-bottom:4px;">Similar</div>
+        <h3 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text);margin:0;">You might also check</h3>
+      </div>
+      <a href="{% url 'item_list' %}?item_type={{ item.item_type }}" class="btn btn-ghost btn-sm">View all →</a>
+    </div>
+    <div class="row g-3">
+      {% for s in similar %}
+      <div class="col-6 col-md-3">
+        <a href="{% url 'item_detail' s.pk %}" style="text-decoration:none;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.3s;" class="browse-card">
+            <div style="height:120px;position:relative;">
+              {% if s.image %}
+              <img src="{{ s.image.url }}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+              {% else %}
+              <div style="width:100%;height:100%;background:{% if s.item_type == 'lost' %}linear-gradient(135deg,#fee2e2,#fecaca){% else %}linear-gradient(135deg,#d1fae5,#a7f3d0){% endif %};display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
+                <i class="fas {{ s.get_category_icon }}" style="color:{% if s.item_type == 'lost' %}var(--lost){% else %}var(--found){% endif %};opacity:0.6;"></i>
+              </div>
+              {% endif %}
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-weight:700;font-size:0.82rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ s.title }}</div>
+              <div style="font-size:0.72rem;color:var(--text3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ s.get_location_display }}
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+function copyLink() {
+  navigator.clipboard.writeText('{{ current_url }}').then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    btn.style.background = 'rgba(16,185,129,0.1)';
+    btn.style.color = 'var(--found)';
+    btn.style.borderColor = 'rgba(16,185,129,0.3)';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fas fa-link"></i> Copy Link';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+</script>
+{% endblock %}

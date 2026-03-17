@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+
+<div style="background:var(--surface);border-bottom:1px solid var(--border);padding:28px 0 0;">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">
+          Welcome back
+        </div>
+        <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.6rem;margin:0;color:var(--text);">
+          {{ request.user.first_name|default:request.user.username }}'s Dashboard
+        </h1>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'post_lost' %}" class="btn btn-danger-custom btn-sm">
+          <i class="fas fa-plus me-1"></i>Post Lost Item
+        </a>
+        <a href="{% url 'post_found' %}" class="btn btn-success-custom btn-sm">
+          <i class="fas fa-plus me-1"></i>Post Found Item
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-0">
+      <div class="col-6 col-md-3">
+        <div style="background:linear-gradient(135deg,#ef4444,#dc2626);border-radius:14px;padding:18px 16px;color:white;">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:8px;">Lost Items</div>
+          <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;line-height:1;">{{ my_lost.count }}</div>
+          <div style="font-size:0.78rem;opacity:0.75;margin-top:4px;">Posted by you</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div style="background:linear-gradient(135deg,#10b981,#059669);border-radius:14px;padding:18px 16px;color:white;">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:8px;">Found Items</div>
+          <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;line-height:1;">{{ my_found.count }}</div>
+          <div style="font-size:0.78rem;opacity:0.75;margin-top:4px;">Posted by you</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div style="background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:14px;padding:18px 16px;color:white;">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:8px;">My Claims</div>
+          <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;line-height:1;">{{ my_claims.count }}</div>
+          <div style="font-size:0.78rem;opacity:0.75;margin-top:4px;">Submitted</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div style="background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:14px;padding:18px 16px;color:white;">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.8;margin-bottom:8px;">Total Posts</div>
+          <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;line-height:1;">{{ my_lost.count|add:my_found.count }}</div>
+          <div style="font-size:0.78rem;opacity:0.75;margin-top:4px;">All time</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;margin-top:24px;border-bottom:2px solid var(--border);">
+      <button class="dash-tab active" onclick="showTab('lost',this)" id="tab-lost-btn">
+        <i class="fas fa-exclamation-triangle me-2" style="color:var(--lost);"></i>
+        Lost Items
+        <span class="dash-tab-count">{{ my_lost.count }}</span>
+      </button>
+      <button class="dash-tab" onclick="showTab('found',this)" id="tab-found-btn">
+        <i class="fas fa-hand-holding me-2" style="color:var(--found);"></i>
+        Found Items
+        <span class="dash-tab-count">{{ my_found.count }}</span>
+      </button>
+      <button class="dash-tab" onclick="showTab('claims',this)" id="tab-claims-btn">
+        <i class="fas fa-clipboard-list me-2" style="color:var(--blue);"></i>
+        My Claims
+        <span class="dash-tab-count">{{ my_claims.count }}</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tab Content -->
+<div class="container py-4">
+
+  <!-- LOST TAB -->
+  <div id="tab-lost">
+    {% if my_lost %}
+    <div class="row g-3">
+      {% for item in my_lost %}
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="dash-item-card">
+          <!-- Image / Icon -->
+          <div class="dash-item-img">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" style="width:100%;height:100%;object-fit:cover;">
+            {% else %}
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#fee2e2,#fca5a5);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
+              <i class="fas {{ item.get_category_icon }}" style="color:var(--lost);"></i>
+            </div>
+            {% endif %}
+            <!-- Status badge -->
+            <span class="dash-status-badge" style="background:{% if item.status == 'active' %}rgba(239,68,68,0.9){% elif item.status == 'resolved' %}rgba(37,99,235,0.9){% else %}rgba(245,158,11,0.9){% endif %};">
+              {{ item.status|upper }}
+            </span>
+          </div>
+          <div class="dash-item-body">
+            <div style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              {{ item.title }}
+            </div>
+            <div style="font-size:0.78rem;color:var(--text3);margin-bottom:10px;">
+              <i class="fas fa-map-marker-alt me-1" style="color:var(--lost);"></i>{{ item.get_location_display }}
+              <span style="margin:0 6px;">·</span>
+              <i class="fas fa-calendar me-1"></i>{{ item.date_lost_found }}
+            </div>
+            <!-- Claims indicator -->
+            {% with claims=item.claims.count %}
+            {% if claims > 0 %}
+            <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:0.78rem;color:var(--gold);font-weight:600;">
+              <i class="fas fa-bell me-1"></i>{{ claims }} claim{{ claims|pluralize }} received
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="d-flex gap-2">
+              <a href="{% url 'item_detail' item.pk %}" class="btn btn-ghost btn-sm flex-grow-1">
+                <i class="fas fa-eye me-1"></i>View
+              </a>
+              <a href="{% url 'edit_item' item.pk %}" class="btn btn-ghost btn-sm flex-grow-1">
+                <i class="fas fa-edit me-1"></i>Edit
+              </a>
+              {% if item.status == 'active' %}
+              <form method="POST" action="{% url 'mark_resolved' item.pk %}" style="flex:1;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm w-100" style="background:rgba(16,185,129,0.1);color:var(--found);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-weight:600;font-size:0.78rem;padding:6px;">
+                  <i class="fas fa-check me-1"></i>Resolve
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty">
+      <div class="dash-empty-icon" style="background:rgba(239,68,68,0.08);">
+        <i class="fas fa-exclamation-triangle" style="color:var(--lost);font-size:1.8rem;"></i>
+      </div>
+      <h5>No lost items posted yet</h5>
+      <p>Lost something? Post it here and the community will help you find it.</p>
+      <a href="{% url 'post_lost' %}" class="btn btn-danger-custom btn-sm mt-2">
+        <i class="fas fa-plus me-2"></i>Post Lost Item
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- FOUND TAB -->
+  <div id="tab-found" style="display:none;">
+    {% if my_found %}
+    <div class="row g-3">
+      {% for item in my_found %}
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="dash-item-card">
+          <div class="dash-item-img">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.title }}" style="width:100%;height:100%;object-fit:cover;">
+            {% else %}
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#d1fae5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">
+              <i class="fas {{ item.get_category_icon }}" style="color:var(--found);"></i>
+            </div>
+            {% endif %}
+            <span class="dash-status-badge" style="background:{% if item.status == 'active' %}rgba(16,185,129,0.9){% elif item.status == 'resolved' %}rgba(37,99,235,0.9){% else %}rgba(245,158,11,0.9){% endif %};">
+              {{ item.status|upper }}
+            </span>
+          </div>
+          <div class="dash-item-body">
+            <div style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              {{ item.title }}
+            </div>
+            <div style="font-size:0.78rem;color:var(--text3);margin-bottom:10px;">
+              <i class="fas fa-map-marker-alt me-1" style="color:var(--found);"></i>{{ item.get_location_display }}
+              <span style="margin:0 6px;">·</span>
+              <i class="fas fa-calendar me-1"></i>{{ item.date_lost_found }}
+            </div>
+            {% with claims=item.claims.count %}
+            {% if claims > 0 %}
+            <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:0.78rem;color:var(--gold);font-weight:600;">
+              <i class="fas fa-bell me-1"></i>{{ claims }} claim{{ claims|pluralize }} received
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="d-flex gap-2">
+              <a href="{% url 'item_detail' item.pk %}" class="btn btn-ghost btn-sm flex-grow-1">
+                <i class="fas fa-eye me-1"></i>View
+              </a>
+              <a href="{% url 'edit_item' item.pk %}" class="btn btn-ghost btn-sm flex-grow-1">
+                <i class="fas fa-edit me-1"></i>Edit
+              </a>
+              {% if item.status == 'active' %}
+              <form method="POST" action="{% url 'mark_resolved' item.pk %}" style="flex:1;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm w-100" style="background:rgba(16,185,129,0.1);color:var(--found);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-weight:600;font-size:0.78rem;padding:6px;">
+                  <i class="fas fa-check me-1"></i>Resolve
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty">
+      <div class="dash-empty-icon" style="background:rgba(16,185,129,0.08);">
+        <i class="fas fa-hand-holding" style="color:var(--found);font-size:1.8rem;"></i>
+      </div>
+      <h5>No found items posted yet</h5>
+      <p>Found something? Post it here and help someone get their belonging back.</p>
+      <a href="{% url 'post_found' %}" class="btn btn-success-custom btn-sm mt-2">
+        <i class="fas fa-plus me-2"></i>Post Found Item
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- CLAIMS TAB -->
+  <div id="tab-claims" style="display:none;">
+    {% if my_claims %}
+    <div class="row g-3">
+      {% for claim in my_claims %}
+      <div class="col-12 col-md-6">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;transition:all 0.2s;">
+          <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+            <div style="flex:1;min-width:0;">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span style="font-size:0.7rem;padding:3px 10px;border-radius:20px;font-weight:700;
+                  {% if claim.item.item_type == 'lost' %}background:rgba(239,68,68,0.1);color:var(--lost);
+                  {% else %}background:rgba(16,185,129,0.1);color:var(--found);{% endif %}">
+                  {{ claim.item.item_type|upper }}
+                </span>
+                <span style="font-size:0.72rem;color:var(--text3);">{{ claim.created_at|date:"d M Y" }}</span>
+              </div>
+              <div style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                {{ claim.item.title }}
+              </div>
+              <div style="font-size:0.82rem;color:var(--text2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+                {{ claim.message }}
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+              <span style="font-size:0.72rem;padding:5px 12px;border-radius:20px;font-weight:700;
+                {% if claim.status == 'approved' %}background:rgba(16,185,129,0.1);color:var(--found);
+                {% elif claim.status == 'rejected' %}background:rgba(239,68,68,0.1);color:var(--lost);
+                {% else %}background:rgba(245,158,11,0.1);color:var(--gold);{% endif %}">
+                {% if claim.status == 'approved' %}<i class="fas fa-check me-1"></i>
+                {% elif claim.status == 'rejected' %}<i class="fas fa-times me-1"></i>
+                {% else %}<i class="fas fa-clock me-1"></i>{% endif %}
+                {{ claim.get_status_display }}
+              </span>
+              <a href="{% url 'item_detail' claim.item.pk %}" class="btn btn-ghost btn-sm" style="padding:5px 12px;font-size:0.78rem;">
+                View Item <i class="fas fa-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty">
+      <div class="dash-empty-icon" style="background:rgba(37,99,235,0.08);">
+        <i class="fas fa-clipboard-list" style="color:var(--blue);font-size:1.8rem;"></i>
+      </div>
+      <h5>No claims submitted yet</h5>
+      <p>Browse found items and submit a claim if you recognize something as yours.</p>
+      <a href="{% url 'item_list' %}?item_type=found" class="btn btn-primary btn-sm mt-2">
+        <i class="fas fa-search me-2"></i>Browse Found Items
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<style>
+.dash-tab {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.dash-tab:hover { color: var(--text); }
+.dash-tab.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+.dash-tab-count {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text2);
+}
+.dash-tab.active .dash-tab-count {
+  background: rgba(37,99,235,0.1);
+  border-color: rgba(37,99,235,0.2);
+  color: var(--blue);
+}
+.dash-item-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  height: 100%;
+}
+.dash-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(37,99,235,0.2);
+}
+.dash-item-img {
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-status-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(4px);
+}
+.dash-item-body { padding: 14px; }
+.dash-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+}
+.dash-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.dash-empty h5 {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+.dash-empty p {
+  font-size: 0.875rem;
+  max-width: 320px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+</style>
+
+<script>
+function showTab(name, btn) {
+  ['lost','found','claims'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = 'none';
+    document.getElementById('tab-' + t + '-btn').classList.remove('active');
+  });
+  document.getElementById('tab-' + name).style.display = 'block';
+  btn.classList.add('active');
+}
+</script>
+
+{% endblock %}

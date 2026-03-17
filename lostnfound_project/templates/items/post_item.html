@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }} — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+
+<div style="background:linear-gradient(135deg,#0f1628,#1e3a6e);padding:36px 0 60px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;"></div>
+  <div class="container position-relative text-center">
+    <div style="width:64px;height:64px;border-radius:18px;
+      background:{% if item_type == 'lost' %}rgba(239,68,68,0.2){% elif item_type == 'found' %}rgba(16,185,129,0.2){% else %}rgba(37,99,235,0.2){% endif %};
+      display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;border:1px solid {% if item_type == 'lost' %}rgba(239,68,68,0.3){% elif item_type == 'found' %}rgba(16,185,129,0.3){% else %}rgba(37,99,235,0.3){% endif %};">
+      <i class="fas {% if item_type == 'lost' %}fa-exclamation-triangle{% elif item_type == 'found' %}fa-hand-holding{% else %}fa-plus{% endif %}"
+         style="font-size:1.5rem;color:{% if item_type == 'lost' %}#f87171{% elif item_type == 'found' %}#34d399{% else %}#93c5fd{% endif %};"></i>
+    </div>
+    <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.8rem;color:white;margin-bottom:8px;">{{ page_title }}</h1>
+    <p style="color:rgba(255,255,255,0.5);font-size:0.9rem;">Fill in as much detail as possible to help others identify the item.</p>
+  </div>
+</div>
+
+<div class="container" style="max-width:720px;margin-top:-28px;padding-bottom:48px;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.1);">
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- Section 1: Basic Info -->
+      <div style="padding:24px 24px 0;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+          <div style="width:24px;height:24px;background:rgba(37,99,235,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-info-circle" style="font-size:0.65rem;color:var(--blue);"></i>
+          </div>
+          Basic Information
+        </div>
+        <div class="row g-3 mb-4">
+          {% for field in form %}
+            {% if field.name == 'title' or field.name == 'description' or field.name == 'item_type' %}
+            <div class="col-12">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}
+              <div style="font-size:0.78rem;color:var(--lost);margin-top:4px;"><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:0 24px;"></div>
+
+      <!-- Section 2: Category & Location -->
+      <div style="padding:24px 24px 0;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--found);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+          <div style="width:24px;height:24px;background:rgba(16,185,129,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-map-marker-alt" style="font-size:0.65rem;color:var(--found);"></i>
+          </div>
+          Category & Location
+        </div>
+        <div class="row g-3 mb-4">
+          {% for field in form %}
+            {% if field.name == 'category' or field.name == 'location' or field.name == 'location_detail' or field.name == 'date_lost_found' %}
+            <div class="{% if field.name == 'location_detail' %}col-12{% else %}col-12 col-sm-6{% endif %}">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+              <div style="font-size:0.72rem;color:var(--text3);margin-top:3px;">{{ field.help_text }}</div>
+              {% endif %}
+              {% for error in field.errors %}
+              <div style="font-size:0.78rem;color:var(--lost);margin-top:4px;"><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:0 24px;"></div>
+
+      <!-- Section 3: Contact & Photo -->
+      <div style="padding:24px 24px 0;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+          <div style="width:24px;height:24px;background:rgba(245,158,11,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-phone" style="font-size:0.65rem;color:var(--gold);"></i>
+          </div>
+          Contact & Photo
+        </div>
+        <div class="row g-3 mb-4">
+          {% for field in form %}
+            {% if field.name == 'contact_email' or field.name == 'contact_phone' or field.name == 'image' %}
+            <div class="col-12 col-sm-{% if field.name == 'image' %}12{% else %}6{% endif %}">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+              <div style="font-size:0.72rem;color:var(--text3);margin-top:3px;">{{ field.help_text }}</div>
+              {% endif %}
+              {% for error in field.errors %}
+              <div style="font-size:0.78rem;color:var(--lost);margin-top:4px;"><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div style="padding:20px 24px 24px;background:var(--surface2);border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="submit" class="btn btn-primary flex-grow-1" style="height:48px;font-size:0.95rem;font-weight:700;">
+          <i class="fas fa-paper-plane me-2"></i>Submit Item
+        </button>
+        <a href="{% url 'item_list' %}" class="btn btn-ghost" style="height:48px;padding:0 24px;">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

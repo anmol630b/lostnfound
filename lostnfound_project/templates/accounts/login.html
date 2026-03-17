@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Sign In — {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div style="min-height:100vh;display:flex;align-items:stretch;">
+
+  <!-- Left Panel -->
+  <div style="flex:1;background:linear-gradient(135deg,#0f1628,#1e3a6e);display:flex;flex-direction:column;justify-content:center;padding:60px;position:relative;overflow:hidden;" class="d-none d-lg-flex">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;"></div>
+    <div style="position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(37,99,235,0.2),transparent 70%);"></div>
+    <div class="position-relative">
+      <a href="{% url 'home' %}" style="display:flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:56px;">
+        <div style="width:38px;height:38px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-search-location" style="color:white;font-size:0.9rem;"></i>
+        </div>
+        <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:white;">{{ SITE_NAME }}</span>
+      </a>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:2rem;color:white;line-height:1.2;margin-bottom:14px;letter-spacing:-0.5px;">
+        Helping people<br><span style="color:#fbbf24;">reconnect</span> with<br>what matters most
+      </h2>
+      <p style="color:rgba(255,255,255,0.5);line-height:1.8;margin-bottom:44px;max-width:340px;">
+        Post lost or found items, connect via WhatsApp, and help your community — all for free.
+      </p>
+      {% for icon, color, text in features %}
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;color:rgba(255,255,255,0.75);font-size:0.9rem;">
+        <div style="width:36px;height:36px;background:{{ color }}20;border:1px solid {{ color }}30;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas {{ icon }}" style="color:{{ color }};font-size:0.8rem;"></i>
+        </div>
+        {{ text }}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div style="width:480px;flex-shrink:0;background:var(--surface);display:flex;flex-direction:column;justify-content:center;padding:56px 48px;overflow-y:auto;" class="w-100">
+    <a href="{% url 'home' %}" style="display:flex;align-items:center;gap:10px;text-decoration:none;margin-bottom:40px;" class="d-lg-none">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:9px;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-search-location" style="color:white;font-size:0.8rem;"></i>
+      </div>
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);">{{ SITE_NAME }}</span>
+    </a>
+
+    {% if request.GET.next %}
+    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+      <div style="width:36px;height:36px;background:rgba(245,158,11,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-lock" style="color:var(--gold);font-size:0.9rem;"></i>
+      </div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text);">Sign in required</div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-top:2px;">Please login to access this page.</div>
+      </div>
+    </div>
+    {% endif %}
+    <div style="font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;">Welcome back</div>
+    <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.75rem;color:var(--text);margin-bottom:8px;letter-spacing:-0.5px;">Sign in to your account</h1>
+    <p style="color:var(--text3);font-size:0.9rem;margin-bottom:32px;">
+      New here? <a href="{% url 'register' %}" style="color:var(--blue);font-weight:700;">Create a free account →</a>
+    </p>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div style="margin-bottom:18px;">
+        <label class="form-label">Username</label>
+        <div style="position:relative;">
+          <i class="fas fa-user" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.85rem;pointer-events:none;"></i>
+          <input type="text" name="username" class="form-control form-control-lg"
+                 placeholder="Enter your username"
+                 value="{{ form.username.value|default:'' }}"
+                 style="padding-left:42px;" autocomplete="username">
+        </div>
+        {% for e in form.username.errors %}<div style="font-size:0.78rem;color:var(--lost);margin-top:4px;"><i class="fas fa-exclamation-circle me-1"></i>{{ e }}</div>{% endfor %}
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <label class="form-label">Password</label>
+        <div style="display:flex;gap:0;">
+          <div style="position:relative;flex:1;">
+            <i class="fas fa-lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:0.85rem;pointer-events:none;z-index:1;"></i>
+            <input type="password" name="password" id="loginPwd" class="form-control form-control-lg"
+                   placeholder="Your password"
+                   style="padding-left:42px;border-radius:var(--radius-sm) 0 0 var(--radius-sm);border-right:none;"
+                   autocomplete="current-password">
+          </div>
+          <button type="button" onclick="togglePwd()"
+                  style="border:1.5px solid var(--border);border-left:none;border-radius:0 var(--radius-sm) var(--radius-sm) 0;background:var(--surface2);color:var(--text3);padding:0 16px;cursor:pointer;transition:all 0.2s;"
+                  id="eyeBtn">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        {% for e in form.password.errors %}<div style="font-size:0.78rem;color:var(--lost);margin-top:4px;">{{ e }}</div>{% endfor %}
+      </div>
+
+      {% if form.non_field_errors %}
+      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;font-size:0.85rem;color:var(--lost);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-exclamation-triangle"></i> {{ form.non_field_errors.0 }}
+      </div>
+      {% endif %}
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.85rem;color:var(--text2);">
+          <input type="checkbox" class="form-check-input m-0"> Remember me
+        </label>
+        <a href="{% url 'password_reset' %}" style="font-size:0.85rem;font-weight:600;color:var(--blue);">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 btn-lg" style="font-size:0.95rem;font-weight:700;height:50px;">
+        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+      </button>
+    </form>
+
+    <div style="display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--text3);font-size:0.8rem;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>or<div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+
+    <a href="{% url 'item_list' %}" class="btn btn-ghost w-100" style="justify-content:center;font-size:0.875rem;">
+      <i class="fas fa-eye me-2"></i>Browse Without Login
+    </a>
+  </div>
+</div>
+
+<script>
+function togglePwd() {
+  const i = document.getElementById('loginPwd');
+  const b = document.getElementById('eyeBtn');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  b.innerHTML = i.type === 'text' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+}
+</script>
+{% endblock %}

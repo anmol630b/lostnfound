@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% block title %}{{ SITE_NAME }} — {{ SITE_TAGLINE }}{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section style="background:linear-gradient(135deg,#0f1628 0%,#1a2e5e 50%,#0f1628 100%);min-height:88vh;display:flex;align-items:center;position:relative;overflow:hidden;">
+
+  <!-- Background effects -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:60px 60px;"></div>
+  <div style="position:absolute;top:-120px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(37,99,235,0.18) 0%,transparent 70%);"></div>
+  <div style="position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(245,158,11,0.1) 0%,transparent 70%);"></div>
+  <div style="position:absolute;top:30%;left:20%;width:200px;height:200px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);"></div>
+
+  <div class="container position-relative">
+    <div class="row align-items-center g-5">
+
+      <!-- Left content -->
+      <div class="col-lg-6" style="animation:fadeDown 0.7s ease both;">
+
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);color:#fbbf24;padding:6px 16px;border-radius:50px;font-size:0.75rem;font-weight:700;letter-spacing:0.5px;margin-bottom:24px;">
+          <span style="width:6px;height:6px;background:#fbbf24;border-radius:50%;animation:pulse 2s infinite;"></span>
+          Free for Everyone — No Sign-up Required to Browse
+        </div>
+
+        <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(2.2rem,5vw,3.5rem);color:white;line-height:1.1;letter-spacing:-1.5px;margin-bottom:20px;">
+          Lost something?<br>
+          <span style="background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+            We'll help you find it.
+          </span>
+        </h1>
+
+        <p style="font-size:1.05rem;color:rgba(255,255,255,0.55);line-height:1.8;max-width:480px;margin-bottom:32px;">
+          Post lost or found items, connect via WhatsApp, and help your community — completely free.
+        </p>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px;">
+          <a href="{% url 'post_lost' %}" class="btn btn-danger-custom btn-lg">
+            <i class="fas fa-exclamation-triangle me-2"></i>I Lost Something
+          </a>
+          <a href="{% url 'post_found' %}" class="btn btn-success-custom btn-lg">
+            <i class="fas fa-hand-holding me-2"></i>I Found Something
+          </a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'item_list' %}" class="btn btn-outline-white">
+            <i class="fas fa-search me-2"></i>Browse Items
+          </a>
+          {% else %}
+          <a href="{% url 'register' %}" class="btn btn-outline-white">
+            <i class="fas fa-search me-2"></i>Browse Items
+          </a>
+          {% endif %}
+        </div>
+
+        <!-- Stats -->
+        <div style="display:flex;gap:32px;flex-wrap:wrap;">
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:white;" data-count="{{ total_lost }}">0</div>
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);">Active Lost</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:white;" data-count="{{ total_found }}">0</div>
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);">Found Items</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-size:2rem;font-weight:800;color:white;" data-count="{{ total_resolved }}">0</div>
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);">Reunited</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Live feed card -->
+      <div class="col-lg-6 d-none d-lg-block" style="animation:fadeLeft 0.8s 0.2s ease both;">
+        <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;max-width:420px;margin-left:auto;">
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:0.9rem;color:white;">Recent Posts</span>
+            <span style="background:rgba(239,68,68,0.15);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.68rem;font-weight:700;border:1px solid rgba(239,68,68,0.2);">● LIVE</span>
+          </div>
+
+          {% for item in recent_lost|slice:":3" %}
+          <a href="{% url 'item_detail' item.pk %}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;margin-bottom:6px;text-decoration:none;transition:background 0.2s;background:rgba(255,255,255,0.03);" onmouseover="this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(239,68,68,0.2);">
+              <i class="fas {{ item.get_category_icon }}" style="color:#f87171;font-size:0.85rem;"></i>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:600;font-size:0.85rem;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ item.title }}</div>
+              <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px;">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ item.get_location_display }}
+              </div>
+            </div>
+            <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:2px 8px;border-radius:10px;font-size:0.65rem;font-weight:700;flex-shrink:0;">LOST</span>
+          </a>
+          {% empty %}
+          <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;">
+            <i class="fas fa-plus-circle mb-2 d-block" style="font-size:1.5rem;"></i>
+            Be the first to post!
+          </div>
+          {% endfor %}
+
+          <div style="height:1px;background:rgba(255,255,255,0.06);margin:12px 0;"></div>
+
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+              <i class="fas fa-check-circle" style="color:#34d399;font-size:0.9rem;"></i>
+              <div>
+                <div style="font-size:0.78rem;font-weight:700;color:white;">{{ total_resolved }} Reunited</div>
+                <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);">Successfully resolved</div>
+              </div>
+            </div>
+            <div style="flex:1;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+              <i class="fab fa-whatsapp" style="color:#fbbf24;font-size:0.9rem;"></i>
+              <div>
+                <div style="font-size:0.78rem;font-weight:700;color:white;">WhatsApp</div>
+                <div style="font-size:0.65rem;color:rgba(255,255,255,0.35);">Direct connect</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="background:var(--surface);padding:64px 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--blue);margin-bottom:10px;">Simple Process</div>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2rem);color:var(--text);">How It Works</h2>
+    </div>
+    <div class="row g-4">
+      {% for num, color, icon, title, desc in steps %}
+      <div class="col-md-4 animate-up">
+        <div style="text-align:center;padding:32px 24px;background:var(--surface);border:1px solid var(--border);border-radius:18px;transition:all 0.3s;height:100%;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+          <div style="width:60px;height:60px;background:{{ color }}15;border:2px solid {{ color }}30;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <i class="fas {{ icon }}" style="color:{{ color }};font-size:1.4rem;"></i>
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:{{ color }};margin-bottom:8px;">Step {{ num }}</div>
+          <h4 style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.05rem;color:var(--text);margin-bottom:10px;">{{ title }}</h4>
+          <p style="color:var(--text2);font-size:0.875rem;line-height:1.7;margin:0;">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- RECENT LOST -->
+<section style="padding:64px 0;background:var(--bg);">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--lost);margin-bottom:6px;">Help Needed</div>
+        <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.3rem,3vw,1.7rem);color:var(--text);margin:0;">Recently Lost</h2>
+      </div>
+      <a href="{% url 'item_list' %}?item_type=lost" class="btn btn-ghost btn-sm">View all →</a>
+    </div>
+    {% if recent_lost %}
+    <div class="row g-3">
+      {% for item in recent_lost %}
+      <div class="col-6 col-md-4 col-lg-2 animate-up">
+        <a href="{% url 'item_detail' item.pk %}" style="text-decoration:none;display:block;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.3s;" class="browse-card">
+            <div style="height:130px;position:relative;overflow:hidden;">
+              {% if item.image %}
+              <img src="{{ item.image.url }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s;" class="browse-card-img" loading="lazy">
+              {% else %}
+              <div style="width:100%;height:100%;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;font-size:2rem;">
+                <i class="fas {{ item.get_category_icon }}" style="color:var(--lost);opacity:0.6;"></i>
+              </div>
+              {% endif %}
+              <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,0.5));"></div>
+              <div style="position:absolute;bottom:8px;left:8px;font-size:0.65rem;font-weight:700;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 16px);">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ item.get_location_display }}
+              </div>
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-weight:700;font-size:0.82rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ item.title }}</div>
+              <div style="font-size:0.7rem;color:var(--text3);margin-top:3px;">{{ item.date_lost_found }}</div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:48px;color:var(--text3);">
+      <i class="fas fa-box-open" style="font-size:2.5rem;margin-bottom:12px;display:block;"></i>
+      No active lost items. <a href="{% url 'post_lost' %}" style="color:var(--blue);font-weight:600;">Post one now</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- RECENT FOUND -->
+<section style="padding:64px 0;background:var(--surface);">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--found);margin-bottom:6px;">Waiting for Owner</div>
+        <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.3rem,3vw,1.7rem);color:var(--text);margin:0;">Recently Found</h2>
+      </div>
+      <a href="{% url 'item_list' %}?item_type=found" class="btn btn-ghost btn-sm">View all →</a>
+    </div>
+    {% if recent_found %}
+    <div class="row g-3">
+      {% for item in recent_found %}
+      <div class="col-6 col-md-4 col-lg-2 animate-up">
+        <a href="{% url 'item_detail' item.pk %}" style="text-decoration:none;display:block;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all 0.3s;" class="browse-card">
+            <div style="height:130px;position:relative;overflow:hidden;">
+              {% if item.image %}
+              <img src="{{ item.image.url }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s;" class="browse-card-img" loading="lazy">
+              {% else %}
+              <div style="width:100%;height:100%;background:linear-gradient(135deg,#d1fae5,#a7f3d0);display:flex;align-items:center;justify-content:center;font-size:2rem;">
+                <i class="fas {{ item.get_category_icon }}" style="color:var(--found);opacity:0.6;"></i>
+              </div>
+              {% endif %}
+              <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,0.5));"></div>
+              <div style="position:absolute;bottom:8px;left:8px;font-size:0.65rem;font-weight:700;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 16px);">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ item.get_location_display }}
+              </div>
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-weight:700;font-size:0.82rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ item.title }}</div>
+              <div style="font-size:0.7rem;color:var(--text3);margin-top:3px;">{{ item.date_lost_found }}</div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:48px;color:var(--text3);">
+      <i class="fas fa-box-open" style="font-size:2.5rem;margin-bottom:12px;display:block;"></i>
+      No found items posted. <a href="{% url 'post_found' %}" style="color:var(--blue);font-weight:600;">Post one now</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- CTA -->
+{% if not user.is_authenticated %}
+<section style="padding:64px 0;background:var(--bg);">
+  <div class="container">
+    <div style="background:linear-gradient(135deg,#0f1628,#1e3a6e);border-radius:24px;padding:56px 40px;text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(37,99,235,0.2),transparent);"></div>
+      <div class="position-relative">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);color:#fbbf24;padding:6px 16px;border-radius:50px;font-size:0.75rem;font-weight:700;margin-bottom:20px;">
+          <i class="fas fa-heart" style="color:#ef4444;"></i> Free forever
+        </div>
+        <h2 style="font-family:'Sora',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2rem);color:white;margin-bottom:12px;letter-spacing:-0.5px;">
+          Join the community
+        </h2>
+        <p style="color:rgba(255,255,255,0.55);max-width:440px;margin:0 auto 32px;line-height:1.7;">
+          Register free in 2 minutes and start posting or finding lost items.
+        </p>
+        <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+          <a href="{% url 'register' %}" class="btn btn-primary btn-lg"><i class="fas fa-user-plus me-2"></i>Get Started Free</a>
+          <a href="{% url 'item_list' %}" class="btn btn-outline-white"><i class="fas fa-search me-2"></i>Browse First</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
